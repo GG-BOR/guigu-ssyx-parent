@@ -1,0 +1,9 @@
+# Project exclude paths
+/common/rabbit-util/target/
+/model/target/
+/service/service-cart/target/
+/service/service-order/target/
+/service/service-payment/target/
+/service/service-search/target/
+/service-client/service-order-client/target/
+/service-gateway/target/

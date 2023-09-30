@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.atguigu.ssyx.activity.mapper.CouponInfoMapper">
+    <resultMap id="CouponInfoMap" type="com.atguigu.ssyx.model.activity.CouponInfo" autoMapping="true"></resultMap>
+    <!--根据skuId+userId查询优惠券信息-->
+    <select id="selectCouponInfoList" resultMap="CouponInfoMap">
+        SELECT info.id
+             , info.coupon_type
+             , info.coupon_name
+             , info.amount
+             , info.condition_amount
+             , info.start_time
+             , info.end_time
+             , info.range_type
+             , info.range_desc
+             , info.publish_count
+             , info.per_limit
+             , info.use_count
+             , info.receive_count
+             , info.expire_time
+             , info.publish_status
+             , info.create_time
+             , info.update_time
+             , info.is_deleted
+             , cuse.coupon_status
+        FROM coupon_info info
+                 LEFT JOIN coupon_range crange ON info.id = crange.`coupon_id`
+                 LEFT JOIN coupon_use cuse ON info.id = cuse.`coupon_id` AND cuse.`user_id` = #{userId}
+        WHERE (
+                    info.`range_type` = 1
+                OR (info.`range_type` = 2 AND crange.`range_id` = #{skuId})
+                OR (info.`range_type` = 3 AND crange.`range_id`=#{categoryId})
+            )
+          AND now() BETWEEN info.start_time AND info.end_time
+        ORDER BY info.amount DESC
+    </select>
+
+    <!--根据userId获取用户全部优惠券-->
+    <select id="selectCartCouponInfoList" resultMap="CouponInfoMap">
+        select
+            info.id,
+            info.coupon_type,
+            info.coupon_name,
+            info.amount,
+            info.condition_amount,
+            info.start_time,
+            info.end_time,
+            info.range_type,
+            info.range_desc,
+            info.publish_count,
+            info.per_limit,
+            info.use_count,
+            info.receive_count,
+            info.expire_time,
+            info.publish_status,
+            info.create_time,
+            info.update_time,
+            info.is_deleted,
+            cuse.coupon_status
+        from coupon_info info
+        inner join coupon_use cuse
+        on cuse.coupon_id = info.id
+        <where>
+            and cuse.user_id = #{userId}
+            and info.expire_time >= now()
+        </where>
+        order by info.amount desc
+    </select>
+</mapper>
